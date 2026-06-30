@@ -4,17 +4,21 @@ declare(strict_types=1);
 
 namespace App\DTOs;
 
+use App\Enums\Protocol;
+
 final readonly class CreateConfigData
 {
     /**
-     * @param string $configId    The Control Plane's UUID for this configuration.
-     * @param string $userId      Reference identifier — not a local foreign key.
-     * @param string $deviceId    Reference identifier — not a local foreign key.
-     * @param array  $driverData  Protocol-specific parameters supplied by the
-     *                            Control Plane. Opaque at this layer.
+     * @param string   $configId    The Control Plane's UUID for this configuration.
+     * @param Protocol $protocol    Which VPN protocol to provision.
+     * @param string   $userId      Reference identifier — not a local foreign key.
+     * @param string   $deviceId    Reference identifier — not a local foreign key.
+     * @param array    $driverData  Protocol-specific parameters supplied by the
+     *                             Control Plane. Opaque at this layer.
      */
     public function __construct(
         public string $configId,
+        public Protocol $protocol,
         public string $userId,
         public string $deviceId,
         public array $driverData,
