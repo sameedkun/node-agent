@@ -1,24 +1,30 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Providers;
 
+use App\Drivers\WireGuard\DTOs\WireGuardNodeConfig;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     */
     public function register(): void
     {
-        //
+        $this->app->singleton(WireGuardNodeConfig::class, static function (): WireGuardNodeConfig {
+            $dns = config('wireguard.dns');
+            $keepalive = config('wireguard.persistent_keepalive');
+
+            return new WireGuardNodeConfig(
+                serverPublicKey:    (string) config('wireguard.server_public_key'),
+                serverEndpoint:     (string) config('wireguard.server_endpoint'),
+                subnet:             (string) config('wireguard.subnet', '10.8.0.0/24'),
+                clientAllowedIps:   (string) config('wireguard.client_allowed_ips', '0.0.0.0/0, ::/0'),
+                dns:                ($dns !== null && $dns !== '') ? (string) $dns : null,
+                persistentKeepalive: ($keepalive !== null && $keepalive !== '') ? (int) $keepalive : null,
+            );
+        });
     }
 
-    /**
-     * Bootstrap any application services.
-     */
-    public function boot(): void
-    {
-        //
-    }
+    public function boot(): void {}
 }
