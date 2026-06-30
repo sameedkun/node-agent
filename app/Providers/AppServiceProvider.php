@@ -6,13 +6,17 @@ namespace App\Providers;
 
 use App\Auth\ControlPlaneAuthentication;
 use App\Auth\SharedSecretAuthentication;
+use App\Drivers\WireGuard\Contracts\WireGuardConfigRepositoryInterface;
 use App\Drivers\WireGuard\DTOs\WireGuardNodeConfig;
+use App\Drivers\WireGuard\WireGuardConfigRepository;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
+        $this->app->bind(WireGuardConfigRepositoryInterface::class, WireGuardConfigRepository::class);
+
         $this->app->singleton(ControlPlaneAuthentication::class, static function (): SharedSecretAuthentication {
             return new SharedSecretAuthentication(
                 nodeUuid:   (string) config('node.uuid'),
