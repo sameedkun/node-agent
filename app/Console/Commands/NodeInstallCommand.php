@@ -56,8 +56,7 @@ final class NodeInstallCommand extends Command
     }
 
     /**
-     * Returns the value if the key is present in the file (even if empty),
-     * or null if the key is completely absent.
+     * Returns the value if the key is present and non-empty, null otherwise.
      */
     private function readEnvValue(string $envPath, string $key): ?string
     {
@@ -65,7 +64,9 @@ final class NodeInstallCommand extends Command
 
         foreach (file($envPath, FILE_IGNORE_NEW_LINES) as $line) {
             if (str_starts_with(ltrim($line), $prefix)) {
-                return substr(ltrim($line), strlen($prefix));
+                $value = substr(ltrim($line), strlen($prefix));
+
+                return $value !== '' ? $value : null;
             }
         }
 
@@ -74,6 +75,14 @@ final class NodeInstallCommand extends Command
 
     private function writeEnvValue(string $envPath, string $key, string $value): void
     {
-        file_put_contents($envPath, PHP_EOL . $key . '=' . $value, FILE_APPEND);
+        $contents = file_get_contents($envPath);
+        $pattern  = '/^(' . preg_quote($key, '/') . '=).*$/m';
+
+        if (preg_match($pattern, $contents)) {
+            $contents = preg_replace($pattern, '$1' . $value, $contents);
+            file_put_contents($envPath, $contents);
+        } else {
+            file_put_contents($envPath, PHP_EOL . $key . '=' . $value, FILE_APPEND);
+        }
     }
 }
