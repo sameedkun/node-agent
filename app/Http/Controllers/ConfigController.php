@@ -25,7 +25,7 @@ final class ConfigController extends Controller
             protocol:   Protocol::from($validated['protocol']),
             userId:     $validated['user_id'],
             deviceId:   $validated['device_id'],
-            driverData: $validated['driver_data'],
+            driverData: $validated['driver_data'] ?? [],
         );
 
         return new ConfigResultResource($this->configService->create($data));

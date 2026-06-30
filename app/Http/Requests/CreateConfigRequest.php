@@ -23,7 +23,7 @@ final class CreateConfigRequest extends FormRequest
             'protocol'    => ['required', 'string', new Enum(Protocol::class)],
             'user_id'     => ['required', 'string'],
             'device_id'   => ['required', 'string'],
-            'driver_data' => ['required', 'array'],
+            'driver_data' => ['sometimes', 'array'],
         ];
     }
 }
